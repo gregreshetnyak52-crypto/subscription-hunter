@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<!-- Страница не может ничего отправить в сеть: запросы запрещены политикой безопасности. -->
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; form-action 'none'; base-uri 'none'">
+<meta name="referrer" content="no-referrer">
+<title>Охотник за подписками</title>
+<meta name="description" content="Найдите забытые подписки в банковской выписке. Работает в браузере, выписка никуда не отправляется.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8E%AF%3C/text%3E%3C/svg%3E">
+<style>
+:root {
+  --bg: #f7f6f2; --surface: #ffffff; --text: #1d1d1b; --muted: #6b6a66; --line: #e4e2db;
+  --accent: #0f6b4f; --accent-soft: #e3f1ea; --warn: #9a5b00; --warn-soft: #fbf0dc;
+  --danger: #a3302a; --danger-soft: #fbe6e4; --shadow: 0 1px 2px rgba(0,0,0,.04), 0 8px 24px rgba(0,0,0,.05);
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #141513; --surface: #1d1e1b; --text: #ecebe6; --muted: #a09f99; --line: #31322e;
+    --accent: #5cc79c; --accent-soft: #1d3329; --warn: #e5b45f; --warn-soft: #362c1a;
+    --danger: #ef8a83; --danger-soft: #3a2220; --shadow: none;
+  }
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--bg); color: var(--text); font: 16px/1.55 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; }
+.wrap { max-width: 980px; margin: 0 auto; padding: 0 16px; }
+header.top { display: flex; justify-content: space-between; align-items: center; padding: 18px 0; }
+.brand { font-weight: 700; letter-spacing: -.01em; }
+.top a { color: var(--muted); text-decoration: none; font-size: 14px; }
+.top a:hover { color: var(--text); }
+.hero { padding: 40px 0 8px; }
+.hero h1 { font-size: clamp(28px, 5vw, 44px); line-height: 1.12; letter-spacing: -.02em; margin: 0 0 14px; max-width: 760px; }
+.hero p { color: var(--muted); font-size: 18px; margin: 0; max-width: 680px; }
+.privacy { display: inline-flex; gap: 8px; align-items: flex-start; margin-top: 18px; padding: 10px 14px; background: var(--accent-soft); color: var(--accent); border-radius: 10px; font-size: 14px; max-width: 680px; }
+.drop { margin: 28px 0 12px; border: 2px dashed var(--line); border-radius: 16px; background: var(--surface); padding: 36px 20px; text-align: center; transition: border-color .15s, background .15s; box-shadow: var(--shadow); }
+.drop.over { border-color: var(--accent); background: var(--accent-soft); }
+.drop strong { display: block; font-size: 19px; margin-bottom: 6px; }
+.drop .hint { color: var(--muted); font-size: 14px; }
+.actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 18px; }
+button, .button { font: inherit; font-size: 15px; border-radius: 10px; padding: 10px 18px; cursor: pointer; border: 1px solid var(--line); background: var(--surface); color: var(--text); }
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+@media (prefers-color-scheme: dark) { button.primary { color: #10231b; } }
+button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+details.howto { color: var(--muted); font-size: 14px; margin: 0 0 32px; }
+details.howto summary { cursor: pointer; }
+.error { display: none; margin: 0 0 24px; padding: 12px 16px; border-radius: 10px; background: var(--danger-soft); color: var(--danger); }
+.warning { margin: 0 0 12px; padding: 10px 14px; border-radius: 10px; background: var(--warn-soft); color: var(--warn); font-size: 14px; }
+#result { display: none; padding-bottom: 32px; }
+.cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 8px 0 16px; }
+.card { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 16px 18px; box-shadow: var(--shadow); }
+.card .label { color: var(--muted); font-size: 13px; }
+.card .value { font-size: 28px; font-weight: 700; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.savings { background: var(--accent-soft); color: var(--accent); border-radius: 12px; padding: 12px 16px; margin-bottom: 16px; font-weight: 600; }
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; box-shadow: var(--shadow); overflow: hidden; margin-bottom: 20px; }
+.panel h2 { font-size: 18px; margin: 0; padding: 16px 18px; border-bottom: 1px solid var(--line); }
+.panel .sub { color: var(--muted); font-size: 14px; font-weight: 400; display: block; margin-top: 2px; }
+table { width: 100%; border-collapse: collapse; font-size: 15px; }
+th, td { text-align: left; padding: 12px 18px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { color: var(--muted); font-weight: 500; font-size: 13px; }
+tr:last-child td { border-bottom: 0; }
+td.num, th.num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+tr.stopped td { color: var(--muted); }
+.name { font-weight: 600; }
+.meta { color: var(--muted); font-size: 13px; }
+.chip { display: inline-block; margin: 4px 6px 0 0; padding: 2px 8px; border-radius: 999px; font-size: 12.5px; background: var(--warn-soft); color: var(--warn); }
+.chip.info { background: var(--accent-soft); color: var(--accent); }
+.chip.muted { background: var(--line); color: var(--muted); }
+label.pick { display: inline-flex; gap: 8px; align-items: center; cursor: pointer; }
+input[type=checkbox] { width: 18px; height: 18px; accent-color: var(--accent); }
+ol.steps { margin: 0; padding: 14px 18px 16px 38px; }
+ol.steps li { margin-bottom: 8px; }
+.footer-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+footer { color: var(--muted); font-size: 14px; border-top: 1px solid var(--line); padding: 20px 0 40px; }
+footer a { color: inherit; }
+@media (max-width: 720px) {
+  .cards { grid-template-columns: 1fr; }
+  th.hide-sm, td.hide-sm { display: none; }
+  th, td { padding: 10px 12px; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <span class="brand">🎯 Охотник за подписками</span>
+    <a href="https://github.com/gregreshetnyak52-crypto/subscription-hunter" rel="noopener">GitHub ★</a>
+  </header>
+
+  <section class="hero">
+    <h1>Найдите подписки, которые тихо съедают ваши деньги</h1>
+    <p>Загрузите выписку по карте — и через секунду увидите все автосписания: сколько они стоят в месяц и в год, что подорожало, какой пробный период стал платным и где всё это отменить.</p>
+    <div class="privacy">🔒 <span>Выписка не покидает ваш браузер. Странице запрещено отправлять что-либо в интернет — это закреплено её настройками безопасности, а не только обещанием.</span></div>
+  </section>
+
+  <section id="drop" class="drop" aria-label="Загрузка выписки">
+    <strong>Перетащите сюда выписку в формате CSV</strong>
+    <span class="hint">Можно несколько файлов — разные карты и банки. Лучше за 3–6 месяцев.</span>
+    <div class="actions">
+      <button class="primary" id="pick" type="button">Выбрать файл</button>
+      <button id="sample" type="button">Попробовать на примере</button>
+    </div>
+    <input id="file" type="file" accept=".csv,.txt,text/csv" multiple hidden>
+  </section>
+  <details class="howto">
+    <summary>Где взять выписку в CSV?</summary>
+    <p>В приложении или интернет-банке откройте счёт или карту, найдите выписку за период и выберите формат CSV (иногда он называется «для Excel» или «таблица»). Если банк выгружает только PDF или Excel, откройте файл в таблицах и сохраните как CSV.</p>
+  </details>
+  <div id="error" class="error" role="alert"></div>
+
+  <section id="result" aria-live="polite">
+    <div id="warnings"></div>
+    <div class="cards">
+      <div class="card"><div class="label">Активных подписок</div><div class="value" id="count">0</div></div>
+      <div class="card"><div class="label">В месяц</div><div class="value" id="monthly">0 ₽</div></div>
+      <div class="card"><div class="label">В год</div><div class="value" id="yearly">0 ₽</div></div>
+    </div>
+    <div class="savings" id="savings">Отметьте подписки, которые хотите отменить, — посчитаю, сколько сэкономите.</div>
+
+    <div class="panel">
+      <h2>Подписки<span class="sub" id="asof"></span></h2>
+      <table>
+        <thead><tr><th>Отменить</th><th>Подписка</th><th class="hide-sm">Период</th><th class="num hide-sm">Сумма</th><th class="num">В год</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+
+    <div class="panel" id="maybe-panel">
+      <h2>Возможные подписки<span class="sub">Одно списание известного сервиса: годовая подписка, новая или разовая покупка.</span></h2>
+      <table><tbody id="maybe"></tbody></table>
+    </div>
+
+    <div class="panel" id="cancel-panel">
+      <h2>Как отменить</h2>
+      <table><tbody id="cancel"></tbody></table>
+      <ol class="steps">
+        <li>Зайдите в приложение или на сайт сервиса и найдите раздел управления подпиской — обычно в профиле или настройках оплаты. Отключите автопродление и сохраните скриншот.</li>
+        <li>Подписки, оформленные в приложении на телефоне, отменяются в магазине приложений. iPhone: Настройки → ваше имя → Подписки. Android: Google Play → профиль → Платежи и подписки → Подписки.</li>
+        <li>Не получается — поищите раздел подписок или автоплатежей в приложении банка, позвоните в банк или перевыпустите карту.</li>
+        <li>Списали после отмены? По ст. 32 Закона «О защите прав потребителей» можно отказаться от услуги и вернуть деньги — <a href="https://github.com/gregreshetnyak52-crypto/subscription-hunter/blob/main/skills/subscription-hunter/refund-request.md" rel="noopener">шаблон заявления</a>.</li>
+      </ol>
+    </div>
+
+    <div class="footer-actions">
+      <button id="download" type="button">Скачать таблицу (CSV)</button>
+      <button id="reset" type="button">Загрузить другую выписку</button>
+    </div>
+  </section>
+
+  <footer>
+    Открытый код, лицензия MIT · <a href="https://github.com/gregreshetnyak52-crypto/subscription-hunter" rel="noopener">GitHub</a> · Есть и версия для командной строки и ИИ-агентов.<br>
+    Отчёт — подсказка, а не финансовая или юридическая консультация. Проект не связан с упомянутыми банками и сервисами.
+  </footer>
+</div>
+<script src="data.js"></script>
+<script src="subhunter.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
