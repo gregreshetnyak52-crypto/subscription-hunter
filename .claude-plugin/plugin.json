@@ -1,0 +1,12 @@
+{
+  "name": "subscription-hunter",
+  "version": "0.1.0",
+  "description": "Находит забытые подписки в банковской выписке и помогает их отменить. Локально, без отправки данных.",
+  "author": {
+    "name": "Greg Reshetnyak",
+    "email": "gregreshetnyak52@gmail.com"
+  },
+  "repository": "https://github.com/gregreshetnyak52-crypto/subscription-hunter",
+  "license": "MIT",
+  "keywords": ["subscriptions", "personal-finance", "bank-statement", "russian", "agent-skills", "privacy"]
+}

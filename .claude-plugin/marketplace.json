@@ -1,0 +1,15 @@
+{
+  "name": "subscription-hunter",
+  "description": "Охотник за подписками: находит забытые автосписания в банковской выписке.",
+  "owner": {
+    "name": "Greg Reshetnyak",
+    "email": "gregreshetnyak52@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "subscription-hunter",
+      "source": "./",
+      "description": "Находит забытые подписки в банковской выписке и помогает их отменить. Локально, без отправки данных."
+    }
+  ]
+}
