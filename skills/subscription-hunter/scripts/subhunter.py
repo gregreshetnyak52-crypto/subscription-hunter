@@ -434,15 +434,20 @@ def report_json(found, maybe, warnings, today):
                        "possible": [item(s) for s in maybe]}, ensure_ascii=False, indent=2) + "\n"
 
 
+def safe_cell(value):
+    """Защита от формул в Excel: значение из выписки не должно начинаться с = + - @."""
+    return "'" + value if value[:1] in ("=", "+", "-", "@", "\t", "\r") else value
+
+
 def report_csv(found, maybe, warnings, today):
     out = io.StringIO()
     writer = csv.writer(out, delimiter=";")
     writer.writerow(["Подписка", "Период", "Последнее списание", "Сумма", "В месяц", "В год",
                      "Активна", "Уверенность", "Заметки"])
     for s in found + maybe:
-        writer.writerow([s.name, s.period, s.last.day.strftime("%d.%m.%Y"), f"{s.last.amount:.2f}",
+        writer.writerow([safe_cell(s.name), s.period, s.last.day.strftime("%d.%m.%Y"), f"{s.last.amount:.2f}",
                          f"{s.monthly:.2f}", f"{s.yearly:.2f}",
-                         "да" if s.active else "нет", s.confidence, "; ".join(s.notes)])
+                         "да" if s.active else "нет", s.confidence, safe_cell("; ".join(s.notes))])
     return out.getvalue()
 
 
