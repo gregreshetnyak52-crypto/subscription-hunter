@@ -1,0 +1,31 @@
+{
+  "_comment": "Справочник известных подписок. patterns — регулярные выражения по описанию операции в нижнем регистре. site — только официальный домен сервиса. Как добавить сервис — в CONTRIBUTING.md.",
+  "services": [
+    {"id": "yandex-plus", "name": "Яндекс Плюс", "category": "Кино, музыка, книги", "patterns": ["yandex.*plus", "plus\\.yandex", "яндекс.*плюс", "yandex\\*?plus"], "site": "plus.yandex.ru"},
+    {"id": "vk-music", "name": "VK Музыка / VK Combo", "category": "Музыка", "patterns": ["vk\\s*(music|combo|музыка)", "вк\\s*музыка", "vk\\.com.*(подписк|subscr)"], "site": "vk.com"},
+    {"id": "zvuk", "name": "Звук", "category": "Музыка", "patterns": ["zvuk", "сберзвук", "звук\\b"], "site": "zvuk.com"},
+    {"id": "okko", "name": "Okko", "category": "Кино", "patterns": ["okko"], "site": "okko.tv"},
+    {"id": "ivi", "name": "Иви", "category": "Кино", "patterns": ["\\bivi\\b", "ivi\\.ru", "\\bиви\\b"], "site": "ivi.ru"},
+    {"id": "kion", "name": "Kion", "category": "Кино", "patterns": ["kion"], "site": "kion.ru"},
+    {"id": "wink", "name": "Wink", "category": "Кино", "patterns": ["\\bwink\\b"], "site": "wink.ru"},
+    {"id": "start", "name": "Start", "category": "Кино", "patterns": ["start\\.ru", "\\bstart\\s*(online|подписк)"], "site": "start.ru"},
+    {"id": "premier", "name": "Premier", "category": "Кино", "patterns": ["premier\\.one", "\\bpremier\\b.*(подписк|subscr)"], "site": "premier.one"},
+    {"id": "amediateka", "name": "Амедиатека", "category": "Кино", "patterns": ["amediateka", "амедиатека"], "site": "amediateka.ru"},
+    {"id": "litres", "name": "Литрес", "category": "Книги", "patterns": ["litres", "литрес"], "site": "litres.ru"},
+    {"id": "mts-premium", "name": "МТС Premium", "category": "Пакет подписок", "patterns": ["mts\\s*premium", "мтс\\s*premium", "мтс\\s*премиум"], "site": "mts.ru"},
+    {"id": "tbank-pro", "name": "Т-Банк Pro / Premium", "category": "Банковская подписка", "patterns": ["(tinkoff|t-bank|tbank|тинькофф|т-банк)\\s*(pro|premium|про|премиум)", "плата за (pro|premium|про|премиум)"], "site": "tbank.ru"},
+    {"id": "alfa-smart", "name": "Альфа Смарт", "category": "Банковская подписка", "patterns": ["альфа\\s*смарт", "alfa\\s*smart"], "site": "alfabank.ru"},
+    {"id": "sberprime", "name": "СберПрайм", "category": "Пакет подписок", "patterns": ["sber\\s*prime", "сбер\\s*прайм", "сберпрайм"], "site": null},
+    {"id": "apple", "name": "Apple (App Store, iCloud, Apple Music)", "category": "Через магазин приложений", "patterns": ["apple\\.com/bill", "apple\\.com", "itunes"], "site": "apple.com", "store": "apple"},
+    {"id": "google-play", "name": "Google Play / Google One / YouTube Premium", "category": "Через магазин приложений", "patterns": ["google\\s*\\*", "google\\s*play", "google\\s*one", "youtube\\s*premium", "youtubepremium"], "site": "play.google.com", "store": "google"},
+    {"id": "spotify", "name": "Spotify", "category": "Музыка", "patterns": ["spotify"], "site": "spotify.com"},
+    {"id": "netflix", "name": "Netflix", "category": "Кино", "patterns": ["netflix"], "site": "netflix.com"},
+    {"id": "chatgpt", "name": "ChatGPT Plus", "category": "ИИ-сервис", "patterns": ["openai", "chatgpt"], "site": "chatgpt.com"},
+    {"id": "claude", "name": "Claude", "category": "ИИ-сервис", "patterns": ["anthropic", "claude\\.ai"], "site": "claude.ai"},
+    {"id": "microsoft-365", "name": "Microsoft 365", "category": "Программы", "patterns": ["microsoft\\s*365", "msft\\s*\\*", "microsoft\\*"], "site": "microsoft.com"},
+    {"id": "adobe", "name": "Adobe", "category": "Программы", "patterns": ["adobe"], "site": "adobe.com"},
+    {"id": "telegram-premium", "name": "Telegram Premium", "category": "Мессенджер", "patterns": ["telegram"], "site": "telegram.org"},
+    {"id": "boosty", "name": "Boosty", "category": "Донаты авторам", "patterns": ["boosty"], "site": "boosty.to"},
+    {"id": "patreon", "name": "Patreon", "category": "Донаты авторам", "patterns": ["patreon"], "site": "patreon.com"}
+  ]
+}
